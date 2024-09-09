@@ -1,5 +1,6 @@
 let display = document.querySelector("#display");
 let buttons = document.querySelectorAll("button");
+let saveButton = document.querySelector(".save-btn");
 let clickSound = new Audio("../sound/mixkit-typewriter-soft-click-1125.wav");
 
 buttons.forEach((item) => {
@@ -26,17 +27,19 @@ buttons.forEach((item) => {
   });
 });
 
-let memory = 0;
-
+// use button with keyboard function
 document.addEventListener("keydown", (event) => {
   let key = event.key;
+
   if (
     !isNaN(key) ||
     ["+", "-", "*", "/", ".", "(", ")"].includes(key) ||
     key === "Backspace" ||
     key === "Escape" ||
     key === "Enter" ||
-    key === "Delete"
+    key === "Delete" ||
+    key === "c" ||
+    key === "C"
   ) {
     clickSound.currentTime = 0;
     clickSound.play();
@@ -47,6 +50,8 @@ document.addEventListener("keydown", (event) => {
   } else if (key === "Escape" || key === "Delete") {
     key = "clear";
   }
+
+  let memory = 0;
 
   if (key === "m") {
     memory = eval(display.innerHTML); // حفظ النتيجة في الذاكرة
@@ -75,6 +80,8 @@ document.addEventListener("keydown", (event) => {
   } else if (key === "clear") {
     display.innerHTML = "Clear";
     setTimeout(() => (display.innerHTML = ""), 800);
+  } else if (key === "c" || key === "C") {
+    copyToClipboard()
   }
 });
 
@@ -94,15 +101,62 @@ document.addEventListener("keyup", (event) => {
   }
 });
 
+// Toggle dark and light mode function
 let calculator = document.querySelector(".calculator");
 let themeToggleBtn = document.querySelector(".theme-toggler");
 let togglerIcon = document.querySelector(".toggler-icon");
 let isDark = true;
 let body = document.body;
 
-themeToggleBtn.onclick = () => {
+themeToggleBtn.addEventListener("click", () => {
   calculator.classList.toggle("dark");
   themeToggleBtn.classList.toggle("active");
   body.classList.toggle("dark");
   isDark = !isDark;
-};
+});
+
+// copy function
+function copyToClipboard() {
+  clickSound.currentTime = 0;
+  clickSound.play();
+  let content = display.innerHTML;
+
+  if (navigator.clipboard) {
+    if (content) {
+      navigator.clipboard
+        .writeText(content)
+        .then(() => {
+          showAlert("Content copied to clipboard:" + content);
+        })
+        .catch((err) => {
+          showAlert("Copy failed:");
+        });
+    } else {
+      showAlert("No content to copy");
+    }
+  } else {
+    showAlert("The Copy to Basra feature is not supported in your browser");
+  }
+}
+
+saveButton.addEventListener("click", () => {
+  copyToClipboard();
+});
+
+// Alert function
+function showAlert(message) {
+  const alertBox = document.getElementById("custom-alert");
+  alertBox.textContent = message;
+  alertBox.classList.remove("hidden");
+
+  setTimeout(() => {
+    alertBox.classList.add("show");
+  }, 10);
+
+  setTimeout(() => {
+    alertBox.classList.remove("show");
+    setTimeout(() => {
+      alertBox.classList.add("hidden");
+    }, 500);
+  }, 1500);
+}

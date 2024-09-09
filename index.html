@@ -12,8 +12,9 @@
 
     <title>Make a Calculator</title>
   </head>
-
+  
   <body class="dark">
+    <div id="custom-alert" class="custom-alert hidden"></div>
     <div class="container">
       <div class="calculator dark">
         <div class="theme-toggler active" aria-label="Toggle Theme">
@@ -21,6 +22,10 @@
         </div>
         <div class="display-screen">
           <div class="dark" id="display" aria-live="polite"></div>
+          <div class="save-and-archives-btn">
+            <div class="save-btn" aria-label="Save">copy</div>
+            <div class="archives-btn" aria-label="Archives">Archives</div>
+          </div>
         </div>
         
           <div class="buttons">
