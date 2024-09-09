@@ -19,6 +19,10 @@ body {
   background-image: linear-gradient(to bottom right, #aae7ff, #ff8989);
 }
 
+body.dark {
+  background-image: linear-gradient(to bottom right, #0c191e, #2e2e2e);
+}
+
 .container {
   height: 100vh;
   /* width: 100vh; */
@@ -37,8 +41,8 @@ body {
 
 .theme-toggler {
   position: absolute;
-  top: 30px;
-  right: 30px;
+  top: 20px;
+  right: 20px;
   color: #fff;
   cursor: pointer;
   z-index: 1;
@@ -48,20 +52,20 @@ body {
   color: #333;
 }
 
-.theme-toggler.active::before {
-  background-color: #fff;
-}
-
 .theme-toggler::before {
   content: "";
   position: absolute;
-  height: 30px;
-  width: 30px;
+  height: 20px;
+  width: 20px;
   top: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background-color: #333;
   z-index: -1;
+}
+
+.theme-toggler.active::before {
+  background-color: #fff;
 }
 
 #display {
@@ -74,12 +78,10 @@ body {
   justify-content: flex-end;
   font-size: 30px;
   margin-bottom: 20px;
-  overflow-x: scroll;
-}
 
-#display::-webkit-scrollbar {
-  display: block;
-  height: 3px;
+  word-break: break-all;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
 button {
@@ -134,7 +136,8 @@ button#equal {
 /************************ dark theme ************************/
 
 .calculator.dark {
-  background-color: #071115;
+  background-color: #1e1e1e;
+  box-shadow: 0 0 20px #444;
 }
 
 .calculator.dark #display {
@@ -161,6 +164,20 @@ button#equal {
   color: #fff;
 }
 
-body.dark {
-  background-image: linear-gradient(to bottom right, #0c191e, #7c7c7c);
+button.active-key {
+  transform: scale(0.9);
+}
+
+button:active {
+  transform: scale(1);
+}
+
+@media (pointer: coarse) {
+  button:hover {
+    transform: scale(1);
+  }
+
+  button:active {
+    transform: scale(0.9);
+  }
 }
