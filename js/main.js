@@ -3,6 +3,16 @@ let buttons = document.querySelectorAll("button");
 let copyButton = document.querySelector(".copy-btn");
 let clickSound = new Audio("../sound/mixkit-typewriter-soft-click-1125.wav");
 
+let calculator = document.querySelector(".calculator");
+let themeToggleBtn = document.querySelector(".theme-toggler");
+let togglerIcon = document.querySelector(".toggler-icon");
+let isDark = true;
+let body = document.body;
+
+let archivesList = document.querySelector(".archives");
+let openArchivesBtn = document.querySelector(".open-archives-btn");
+let closeArchivesBtn = document.querySelector(".close-archives-btn");
+
 let previousContent = "";
 
 buttons.forEach((item) => {
@@ -45,9 +55,15 @@ document.addEventListener("keydown", (event) => {
     key === "Escape" ||
     key === "Enter" ||
     key === "Delete" ||
+    key === "a" ||
+    key === "A" ||
+    key === "ش" ||
     key === "c" ||
     key === "C" ||
-    key === "ؤ"
+    key === "ؤ" ||
+    key === "T" ||
+    key === "t" ||
+    key === "ف"
   ) {
     playSound();
   }
@@ -87,6 +103,14 @@ document.addEventListener("keydown", (event) => {
     setTimeout(() => (display.innerHTML = ""), 800);
   } else if (key === "c" || key === "C" || key === "ؤ") {
     copyToClipboard();
+  } else if (key === "T" || key === "t" || key === "ف") {
+    themeToggle();
+  } else if (key === "a" || key === "A" || key === "ش") {
+    if (archivesList.classList.contains("visible")) {
+      closeArchives();
+    } else {
+      openArchives();
+    }
   }
 });
 
@@ -107,18 +131,15 @@ document.addEventListener("keyup", (event) => {
 });
 
 // Toggle dark and light mode function
-let calculator = document.querySelector(".calculator");
-let themeToggleBtn = document.querySelector(".theme-toggler");
-let togglerIcon = document.querySelector(".toggler-icon");
-let isDark = true;
-let body = document.body;
-
-themeToggleBtn.addEventListener("click", () => {
+function themeToggle() {
   playSound();
   calculator.classList.toggle("dark");
   themeToggleBtn.classList.toggle("active");
   body.classList.toggle("dark");
   isDark = !isDark;
+}
+themeToggleBtn.addEventListener("click", () => {
+  themeToggle();
 });
 
 // copy function
@@ -175,7 +196,7 @@ function playSound() {
 // save operations in localStorage function
 function saveToLocalStorage(operation, result) {
   let operations = JSON.parse(localStorage.getItem("operations")) || [];
-  let operationObject = { operation: operation, result: result };
+  let operationObject = { operation: `${operation} =`, result: result };
   operations.push(operationObject);
   if (operations.length > 50) {
     operations.shift(); // Remove the oldest operation
@@ -216,7 +237,6 @@ function isOperation(content) {
 function handleSaveButtonClick(operation, result) {
   saveToLocalStorage(operation, result);
   loadFromLocalStorage();
-  // showAlert(`Result: ${fullOperation} saved to archives`);
 }
 
 // load operations from localStorage function at startup window
@@ -224,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFromLocalStorage();
 });
 
+// clear archives list function
 let clearArchiveBtn = document.querySelector(".clear-archives-btn");
 
 clearArchiveBtn.addEventListener("click", () => {
@@ -231,14 +252,29 @@ clearArchiveBtn.addEventListener("click", () => {
   loadFromLocalStorage();
 });
 
-let archivesList = document.querySelector(".archives");
-let openArchivesBtn = document.querySelector(".open-archives-btn");
-let closeArchivesBtn = document.querySelector(".close-archives-btn");
+// open and close archives list function
+function openArchives() {
+  archivesList.classList.add("visible");
+}
+
+function closeArchives() {
+  archivesList.classList.remove("visible");
+}
 
 openArchivesBtn.addEventListener("click", () => {
-  archivesList.classList.add("visible");
+  openArchives();
 });
 
 closeArchivesBtn.addEventListener("click", () => {
-  archivesList.classList.remove("visible");
+  closeArchives();
+});
+
+// Check if the click was outside the archivesList and the openArchivesBtn
+document.addEventListener("click", (event) => {
+  if (
+    !archivesList.contains(event.target) &&
+    !openArchivesBtn.contains(event.target)
+  ) {
+    closeArchives();
+  }
 });
