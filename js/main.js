@@ -1,6 +1,6 @@
 let display = document.querySelector("#display");
 let buttons = document.querySelectorAll("button");
-let saveButton = document.querySelector(".save-btn");
+let copyButton = document.querySelector(".copy-btn");
 let clickSound = new Audio("../sound/mixkit-typewriter-soft-click-1125.wav");
 
 let previousContent = "";
@@ -144,7 +144,7 @@ function copyToClipboard() {
   }
 }
 
-saveButton.addEventListener("click", () => {
+copyButton.addEventListener("click", () => {
   copyToClipboard();
 });
 
@@ -173,23 +173,36 @@ function playSound() {
 }
 
 // save operations in localStorage function
-function saveToLocalStorage(operation) {
+function saveToLocalStorage(operation, result) {
   let operations = JSON.parse(localStorage.getItem("operations")) || [];
-  operations.push(operation);
+  let operationObject = { operation: operation, result: result };
+  operations.push(operationObject);
+  if (operations.length > 50) {
+    operations.shift(); // Remove the oldest operation
+  }
   localStorage.setItem("operations", JSON.stringify(operations));
 }
 
 // load operations from localStorage function
 function loadFromLocalStorage() {
   let operations = JSON.parse(localStorage.getItem("operations")) || [];
-  const archivesList = document.querySelector(".archives-list");
-  archivesList.innerHTML = "";
-  let itemUl = document.createElement("ul");
+  const operationsItem = document.querySelector(".operations-item");
+  const resultsItem = document.querySelector(".results-item");
+  operationsItem.innerHTML = "";
+  resultsItem.innerHTML = "";
+
   operations.forEach((op) => {
-    let itemLi = document.createElement("li");
-    itemLi.textContent = op;
-    itemUl.appendChild(itemLi);
-    archivesList.appendChild(itemUl);
+    let operationElement = document.createElement("p");
+    operationElement.className = "operation";
+    operationElement.textContent = op.operation;
+
+    // Create and append result element
+    let resultElement = document.createElement("p");
+    resultElement.className = "result";
+    resultElement.textContent = op.result;
+
+    operationsItem.appendChild(operationElement);
+    resultsItem.appendChild(resultElement);
   });
 }
 
@@ -201,8 +214,7 @@ function isOperation(content) {
 
 // save + load LocalStorage function
 function handleSaveButtonClick(operation, result) {
-  let fullOperation = `Operation: ${operation} = ${result}`;
-  saveToLocalStorage(fullOperation);
+  saveToLocalStorage(operation, result);
   loadFromLocalStorage();
   // showAlert(`Result: ${fullOperation} saved to archives`);
 }
@@ -210,4 +222,23 @@ function handleSaveButtonClick(operation, result) {
 // load operations from localStorage function at startup window
 document.addEventListener("DOMContentLoaded", () => {
   loadFromLocalStorage();
+});
+
+let clearArchiveBtn = document.querySelector(".clear-archives-btn");
+
+clearArchiveBtn.addEventListener("click", () => {
+  localStorage.removeItem("operations");
+  loadFromLocalStorage();
+});
+
+let archivesList = document.querySelector(".archives");
+let openArchivesBtn = document.querySelector(".open-archives-btn");
+let closeArchivesBtn = document.querySelector(".close-archives-btn");
+
+openArchivesBtn.addEventListener("click", () => {
+  archivesList.classList.add("visible");
+});
+
+closeArchivesBtn.addEventListener("click", () => {
+  archivesList.classList.remove("visible");
 });
