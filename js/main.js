@@ -3,6 +3,8 @@ let buttons = document.querySelectorAll("button");
 let saveButton = document.querySelector(".save-btn");
 let clickSound = new Audio("../sound/mixkit-typewriter-soft-click-1125.wav");
 
+let previousContent = "";
+
 buttons.forEach((item) => {
   item.addEventListener("click", () => {
     playSound();
@@ -14,8 +16,14 @@ buttons.forEach((item) => {
       let string = display.innerHTML.toString();
       display.innerHTML = string.substr(0, string.length - 1);
     } else if (item.id === "equal") {
+      previousContent = display.innerHTML || 0;
+
       try {
-        display.innerHTML = eval(display.innerHTML) || "0";
+        let result = eval(display.innerHTML) || "0";
+        display.innerHTML = result;
+        if (isOperation(previousContent)) {
+          handleSaveButtonClick(previousContent, result);
+        }
       } catch (error) {
         display.innerHTML = "Error";
         setTimeout(() => (display.innerHTML = ""), 800);
@@ -59,8 +67,14 @@ document.addEventListener("keydown", (event) => {
   if (!isNaN(key) || ["+", "-", "*", "/", ".", "(", ")"].includes(key)) {
     display.innerHTML += key;
   } else if (key === "equal") {
+    previousContent = display.innerHTML;
+
     try {
-      display.innerHTML = eval(display.innerHTML) || "0";
+      let result = eval(display.innerHTML) || "0";
+      display.innerHTML = result;
+      if (isOperation(previousContent)) {
+        handleSaveButtonClick(previousContent, result);
+      }
     } catch (error) {
       display.innerHTML = "Error";
       setTimeout(() => (display.innerHTML = ""), 800);
@@ -157,3 +171,43 @@ function playSound() {
   clickSound.currentTime = 0;
   clickSound.play();
 }
+
+// save operations in localStorage function
+function saveToLocalStorage(operation) {
+  let operations = JSON.parse(localStorage.getItem("operations")) || [];
+  operations.push(operation);
+  localStorage.setItem("operations", JSON.stringify(operations));
+}
+
+// load operations from localStorage function
+function loadFromLocalStorage() {
+  let operations = JSON.parse(localStorage.getItem("operations")) || [];
+  const archivesList = document.querySelector(".archives-list");
+  archivesList.innerHTML = "";
+  let itemUl = document.createElement("ul");
+  operations.forEach((op) => {
+    let itemLi = document.createElement("li");
+    itemLi.textContent = op;
+    itemUl.appendChild(itemLi);
+    archivesList.appendChild(itemUl);
+  });
+}
+
+// add condition for operation function
+function isOperation(content) {
+  const operationRegex = /[\+\-\*\/]/;
+  return operationRegex.test(content);
+}
+
+// save + load LocalStorage function
+function handleSaveButtonClick(operation, result) {
+  let fullOperation = `Operation: ${operation} = ${result}`;
+  saveToLocalStorage(fullOperation);
+  loadFromLocalStorage();
+  // showAlert(`Result: ${fullOperation} saved to archives`);
+}
+
+// load operations from localStorage function at startup window
+document.addEventListener("DOMContentLoaded", () => {
+  loadFromLocalStorage();
+});

@@ -62,7 +62,7 @@ body.dark .custom-alert {
   height: auto;
   width: auto;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 35px;
   box-shadow: 0 0 30px #4c4c4c;
 }
 
@@ -247,6 +247,7 @@ button:active {
 @media (max-width: 1114px) {
   .theme-toggler {
     cursor: auto;
+    /* -webkit-tap-highlight-color: transparent; */
   }
 
   .archives-btn,
