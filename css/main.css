@@ -8,14 +8,6 @@
 
 body {
   font-family: sans-serif;
-}
-
-a {
-  text-decoration: none;
-  color: #fff;
-}
-
-body {
   background-image: linear-gradient(to bottom right, #aae7ff, #ffffff);
 }
 
@@ -23,13 +15,18 @@ body.dark {
   background-image: linear-gradient(to bottom right, #0c191e, #2e2e2e);
 }
 
+a {
+  text-decoration: none;
+  color: #fff;
+}
+
 .custom-alert {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #007304;
-  color: white;
+  background-image: linear-gradient(to bottom right, #aae7ff, #ffffff);
+  color: #333;
   padding: 15px 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -49,7 +46,8 @@ body.dark {
 }
 
 body.dark .custom-alert {
-  background-color: #2e2e2e;
+  background-image: linear-gradient(to bottom right, #0c191e, #2e2e2e);
+  color: #fff;
 }
 
 .container {
@@ -145,13 +143,17 @@ body.dark .custom-alert {
 
 .archives-btn:active,
 .save-btn:active {
-  transform: scale(.9);
+  transform: scale(0.9);
 }
 
 body.dark .archives-btn,
 body.dark .save-btn {
   background-color: #223323;
   color: white;
+}
+
+.archives-list {
+  display: none;
 }
 
 button {
@@ -176,7 +178,7 @@ button#equal {
 /************************ light theme ************************/
 
 .calculator {
-  background-color: #fff;
+  background-image: linear-gradient(to bottom right, #ffffff, #aae7ff);
 }
 
 .calculator #display {
@@ -206,7 +208,7 @@ button#equal {
 /************************ dark theme ************************/
 
 .calculator.dark {
-  background-color: #1e1e1e;
+  background-image: linear-gradient(to bottom right, #2e2e2e, #0c191e);
   box-shadow: 0 0 20px #444;
 }
 
@@ -242,7 +244,20 @@ button:active {
   transform: scale(1);
 }
 
-@media (pointer: coarse) {
+@media (max-width: 1114px) {
+  .theme-toggler {
+    cursor: auto;
+  }
+
+  .archives-btn,
+  .save-btn {
+    cursor: auto;
+  }
+
+  button {
+    cursor: auto;
+  }
+
   button:hover {
     transform: scale(1);
   }

@@ -5,12 +5,11 @@ let clickSound = new Audio("../sound/mixkit-typewriter-soft-click-1125.wav");
 
 buttons.forEach((item) => {
   item.addEventListener("click", () => {
-    clickSound.currentTime = 0;
-    clickSound.play();
+    playSound();
 
     if (item.id == "clear") {
       display.innerHTML = "Clear";
-      setTimeout(() => (display.innerHTML = ""), 800);
+      setTimeout(() => (display.innerHTML = ""), 700);
     } else if (item.id == "backspace") {
       let string = display.innerHTML.toString();
       display.innerHTML = string.substr(0, string.length - 1);
@@ -19,7 +18,7 @@ buttons.forEach((item) => {
         display.innerHTML = eval(display.innerHTML) || "0";
       } catch (error) {
         display.innerHTML = "Error";
-        setTimeout(() => (display.innerHTML = ""), 2000);
+        setTimeout(() => (display.innerHTML = ""), 800);
       }
     } else {
       display.innerHTML += item.id;
@@ -39,24 +38,16 @@ document.addEventListener("keydown", (event) => {
     key === "Enter" ||
     key === "Delete" ||
     key === "c" ||
-    key === "C"
+    key === "C" ||
+    key === "ؤ"
   ) {
-    clickSound.currentTime = 0;
-    clickSound.play();
+    playSound();
   }
 
   if (key === "Enter") {
     key = "equal";
   } else if (key === "Escape" || key === "Delete") {
     key = "clear";
-  }
-
-  let memory = 0;
-
-  if (key === "m") {
-    memory = eval(display.innerHTML); // حفظ النتيجة في الذاكرة
-  } else if (key === "r") {
-    display.innerHTML = memory; // استرجاع النتيجة من الذاكرة
   }
 
   let button = document.querySelector(`button[id="${key}"]`);
@@ -72,7 +63,7 @@ document.addEventListener("keydown", (event) => {
       display.innerHTML = eval(display.innerHTML) || "0";
     } catch (error) {
       display.innerHTML = "Error";
-      setTimeout(() => (display.innerHTML = ""), 2000);
+      setTimeout(() => (display.innerHTML = ""), 800);
     }
   } else if (key === "Backspace") {
     let string = display.innerHTML.toString();
@@ -80,8 +71,8 @@ document.addEventListener("keydown", (event) => {
   } else if (key === "clear") {
     display.innerHTML = "Clear";
     setTimeout(() => (display.innerHTML = ""), 800);
-  } else if (key === "c" || key === "C") {
-    copyToClipboard()
+  } else if (key === "c" || key === "C" || key === "ؤ") {
+    copyToClipboard();
   }
 });
 
@@ -109,6 +100,7 @@ let isDark = true;
 let body = document.body;
 
 themeToggleBtn.addEventListener("click", () => {
+  playSound();
   calculator.classList.toggle("dark");
   themeToggleBtn.classList.toggle("active");
   body.classList.toggle("dark");
@@ -117,8 +109,7 @@ themeToggleBtn.addEventListener("click", () => {
 
 // copy function
 function copyToClipboard() {
-  clickSound.currentTime = 0;
-  clickSound.play();
+  playSound();
   let content = display.innerHTML;
 
   if (navigator.clipboard) {
@@ -126,10 +117,10 @@ function copyToClipboard() {
       navigator.clipboard
         .writeText(content)
         .then(() => {
-          showAlert("Content copied to clipboard:" + content);
+          showAlert(`Result: ${content} copied to the clipboard`);
         })
         .catch((err) => {
-          showAlert("Copy failed:");
+          showAlert("Copy failed: " + err);
         });
     } else {
       showAlert("No content to copy");
@@ -159,4 +150,10 @@ function showAlert(message) {
       alertBox.classList.add("hidden");
     }, 500);
   }, 1500);
+}
+
+// sound effect function
+function playSound() {
+  clickSound.currentTime = 0;
+  clickSound.play();
 }
