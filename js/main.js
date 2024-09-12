@@ -1,4 +1,6 @@
 let display = document.querySelector("#display");
+let operationTag = document.querySelector(".operation");
+let resultTag = document.querySelector(".result");
 let buttons = document.querySelectorAll("button");
 let copyButton = document.querySelector(".copy-btn");
 let clickSound = new Audio("../sound/mixkit-typewriter-soft-click-1125.wav");
@@ -21,26 +23,40 @@ buttons.forEach((item) => {
     playSound();
 
     if (item.id == "clear") {
-      display.innerHTML = "Clear";
-      setTimeout(() => (display.innerHTML = ""), 700);
+      resultTag.innerHTML = "";
+      operationTag.innerHTML = "";
+      setTimeout(() => {
+        if (resultTag.innerHTML.trim() === "Clear") {
+          resultTag.innerHTML = "";
+        }
+      }, 800);
     } else if (item.id == "backspace") {
-      let string = display.innerHTML.toString();
-      display.innerHTML = string.substr(0, string.length - 1);
+      let string = resultTag.innerHTML.toString();
+      resultTag.innerHTML = string.substr(0, string.length - 1);
     } else if (item.id === "equal") {
-      previousContent = display.innerHTML || 0;
+      previousContent = resultTag.innerHTML || 0;
 
       try {
-        let result = eval(display.innerHTML) || "0";
-        display.innerHTML = result;
+        let result = eval(resultTag.innerHTML) || "0";
+
+        operationTag.innerHTML = `${previousContent} =`;
+        resultTag.innerHTML = result;
+
+        display.classList.add("operation-move-up");
+        setTimeout(() => {
+          display.classList.remove("operation-move-up");
+        }, 500);
+
         if (isOperation(previousContent)) {
           handleSaveButtonClick(previousContent, result);
         }
       } catch (error) {
-        display.innerHTML = "Error";
-        setTimeout(() => (display.innerHTML = ""), 800);
+        console.log(error);
+        resultTag.innerHTML = "Error";
+        setTimeout(() => (resultTag.innerHTML = previousContent), 800);
       }
     } else {
-      display.innerHTML += item.id;
+      resultTag.innerHTML += item.id;
     }
   });
 });
@@ -91,37 +107,43 @@ document.addEventListener("keydown", (event) => {
 
   if (!isNaN(key) || ["+", "-", "*", "/", ".", "(", ")"].includes(key)) {
     if (
-      display.innerHTML.trim() == "Error" ||
-      display.innerHTML.trim() == "Clear"
+      resultTag.innerHTML.trim() == "Error" ||
+      resultTag.innerHTML.trim() == "Clear"
     ) {
-      display.innerHTML = "";
+      resultTag.innerHTML = "";
     }
-    display.innerHTML += key;
+    resultTag.innerHTML += key;
   } else if (key === "equal") {
-    previousContent = display.innerHTML;
+    previousContent = resultTag.innerHTML || 0;
 
     try {
-      let result = eval(display.innerHTML) || "0";
-      display.innerHTML = result;
+      let result = eval(resultTag.innerHTML) || "0";
+
+      operationTag.innerHTML = `${previousContent} =`;
+      resultTag.innerHTML = result;
+
+      display.classList.add("operation-move-up");
+      setTimeout(() => {
+        display.classList.remove("operation-move-up");
+      }, 500);
+
       if (isOperation(previousContent)) {
         handleSaveButtonClick(previousContent, result);
       }
     } catch (error) {
-      display.innerHTML = "Error";
-      setTimeout(() => {
-        if (display.innerHTML.trim() === "Error") {
-          display.innerHTML = "";
-        }
-      }, 800);
+      console.log(error);
+      resultTag.innerHTML = "Error";
+      setTimeout(() => (resultTag.innerHTML = previousContent), 800);
     }
   } else if (key === "Backspace") {
-    let string = display.innerHTML.toString();
-    display.innerHTML = string.substr(0, string.length - 1);
+    let string = resultTag.innerHTML.toString();
+    resultTag.innerHTML = string.substr(0, string.length - 1);
   } else if (key === "clear") {
-    display.innerHTML = "Clear";
+    resultTag.innerHTML = "Clear";
+    operationTag.innerHTML = "";
     setTimeout(() => {
-      if (display.innerHTML.trim() === "Clear") {
-        display.innerHTML = "";
+      if (resultTag.innerHTML.trim() === "Clear") {
+        resultTag.innerHTML = "";
       }
     }, 800);
   } else if (key === "c" || key === "C" || key === "ؤ") {
@@ -169,7 +191,7 @@ themeToggleBtn.addEventListener("click", () => {
 // copy function
 function copyToClipboard() {
   playSound();
-  let content = display.innerHTML;
+  let content = resultTag.innerHTML;
 
   if (navigator.clipboard) {
     if (content) {
@@ -317,3 +339,74 @@ document.addEventListener("DOMContentLoaded", () => {
   // Load features from localStorage
   loadFromLocalStorage();
 });
+
+// function showAlert(message, options = {}) {
+//   const alertBox = document.querySelector("#custom-alert");
+//   const messageElement = document.querySelector("#alert-message");
+//   const buttonsContainer = document.querySelector("#alert-buttons");
+//   const confirmBtn = document.querySelector("#confirm-btn");
+//   const cancelBtn = document.querySelector("#cancel-btn");
+
+//   // عرض الرسالة
+//   messageElement.textContent = message;
+//   alertBox.classList.remove("hidden");
+
+//   // إعداد الأزرار إذا تم تقديم خيارات
+//   if (options.confirm || options.cancel) {
+//     buttonsContainer.classList.remove("hidden");
+
+//     // إعداد زر confirm
+//     if (options.confirm !== undefined) {
+//       confirmBtn.style.display = "inline-block";
+//       confirmBtn.onclick = () => {
+//         options.confirm();
+//         // hideAlert();
+//       };
+//     } else {
+//       confirmBtn.style.display = "none";
+//     }
+
+//     // إعداد زر cancel
+//     if (options.cancel) {
+//       cancelBtn.style.display = "inline-block";
+//       cancelBtn.onclick = () => {
+//         options.cancel();
+//         // hideAlert();
+//       };
+//     } else {
+//       cancelBtn.style.display = "none";
+//     }
+//   } else {
+//     buttonsContainer.classList.add("hidden");
+//   }
+
+//   // إخفاء التنبيه بعد فترة إذا لم تكن هناك أزرار
+//   if (!options.confirm && !options.cancel) {
+//     setTimeout(() => hideAlert(), 1500);
+//   }
+// }
+
+// function hideAlert() {
+//   const alertBox = document.getElementById("custom-alert");
+//   setTimeout(() => {
+//     alertBox.classList.add("hidden");
+//   }, 0);
+// }
+
+// // مثال على الاستخدام مع الأزرار
+// document.addEventListener("click", () => {
+//   showAlert("Do you confirm?", {
+//     confirm: () => {
+//       console.log("Confirmed");
+//       setTimeout(() => {
+//         showAlert("Confirmed");
+//       }, 0);
+//     },
+//     cancel: () => {
+//       console.log("canceled");
+//       setTimeout(() => {
+//         showAlert("canceled");
+//       }, 0);
+//     },
+//   });
+// });
