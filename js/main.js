@@ -12,6 +12,7 @@ let body = document.body;
 let archivesList = document.querySelector(".archives");
 let openArchivesBtn = document.querySelector(".open-archives-btn");
 let closeArchivesBtn = document.querySelector(".close-archives-btn");
+let clearArchiveBtn = document.querySelector(".clear-archives-btn");
 
 let previousContent = "";
 
@@ -71,7 +72,15 @@ document.addEventListener("keydown", (event) => {
   if (key === "Enter") {
     key = "equal";
   } else if (key === "Escape" || key === "Delete") {
-    key = "clear";
+    if (archivesList.classList.contains("visible")) {
+      if (key === "Escape") {
+        closeArchives(); // If Archives is open, it is closed
+      } else if (key === "Delete") {
+        clearArchives(); // If Archives is open, it is clear
+      }
+    } else {
+      key = "clear"; // If it is not open, the screen is cleared
+    }
   }
 
   let button = document.querySelector(`button[id="${key}"]`);
@@ -81,6 +90,12 @@ document.addEventListener("keydown", (event) => {
   }
 
   if (!isNaN(key) || ["+", "-", "*", "/", ".", "(", ")"].includes(key)) {
+    if (
+      display.innerHTML.trim() == "Error" ||
+      display.innerHTML.trim() == "Clear"
+    ) {
+      display.innerHTML = "";
+    }
     display.innerHTML += key;
   } else if (key === "equal") {
     previousContent = display.innerHTML;
@@ -93,14 +108,22 @@ document.addEventListener("keydown", (event) => {
       }
     } catch (error) {
       display.innerHTML = "Error";
-      setTimeout(() => (display.innerHTML = ""), 800);
+      setTimeout(() => {
+        if (display.innerHTML.trim() === "Error") {
+          display.innerHTML = "";
+        }
+      }, 800);
     }
   } else if (key === "Backspace") {
     let string = display.innerHTML.toString();
     display.innerHTML = string.substr(0, string.length - 1);
   } else if (key === "clear") {
     display.innerHTML = "Clear";
-    setTimeout(() => (display.innerHTML = ""), 800);
+    setTimeout(() => {
+      if (display.innerHTML.trim() === "Clear") {
+        display.innerHTML = "";
+      }
+    }, 800);
   } else if (key === "c" || key === "C" || key === "ؤ") {
     copyToClipboard();
   } else if (key === "T" || key === "t" || key === "ف") {
@@ -137,6 +160,7 @@ function themeToggle() {
   themeToggleBtn.classList.toggle("active");
   body.classList.toggle("dark");
   isDark = !isDark;
+  localStorage.setItem("theme", isDark ? "dark" : "light");
 }
 themeToggleBtn.addEventListener("click", () => {
   themeToggle();
@@ -239,34 +263,27 @@ function handleSaveButtonClick(operation, result) {
   loadFromLocalStorage();
 }
 
-// load operations from localStorage function at startup window
-document.addEventListener("DOMContentLoaded", () => {
-  loadFromLocalStorage();
-});
-
 // clear archives list function
-let clearArchiveBtn = document.querySelector(".clear-archives-btn");
-
-clearArchiveBtn.addEventListener("click", () => {
+function clearArchives() {
   localStorage.removeItem("operations");
   loadFromLocalStorage();
-});
-
+  showAlert("Archives cleared");
+}
 // open and close archives list function
 function openArchives() {
   archivesList.classList.add("visible");
 }
-
 function closeArchives() {
   archivesList.classList.remove("visible");
 }
-
 openArchivesBtn.addEventListener("click", () => {
   openArchives();
 });
-
 closeArchivesBtn.addEventListener("click", () => {
   closeArchives();
+});
+clearArchiveBtn.addEventListener("click", () => {
+  clearArchives();
 });
 
 // Check if the click was outside the archivesList and the openArchivesBtn
@@ -277,4 +294,26 @@ document.addEventListener("click", (event) => {
   ) {
     closeArchives();
   }
+});
+
+// load operations from localStorage function at startup window
+document.addEventListener("DOMContentLoaded", () => {
+  // Load theme from localStorage
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    if (savedTheme === "dark") {
+      calculator.classList.add("dark");
+      themeToggleBtn.classList.add("active");
+      body.classList.add("dark");
+      isDark = true;
+    } else {
+      calculator.classList.remove("dark");
+      themeToggleBtn.classList.remove("active");
+      body.classList.remove("dark");
+      isDark = false;
+    }
+  }
+
+  // Load features from localStorage
+  loadFromLocalStorage();
 });
