@@ -3,7 +3,7 @@ let operationTag = document.querySelector(".operation");
 let resultTag = document.querySelector(".result");
 let buttons = document.querySelectorAll("button");
 let copyButton = document.querySelector(".copy-btn");
-let clickSound = new Audio("../sound/mixkit-typewriter-soft-click-1125.wav");
+let clickSound = new Audio("./sound/mixkit-typewriter-soft-click-1125.wav");
 
 let calculator = document.querySelector(".calculator");
 let themeToggleBtn = document.querySelector(".theme-toggler");
